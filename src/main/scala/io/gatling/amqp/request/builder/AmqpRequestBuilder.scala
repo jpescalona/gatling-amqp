@@ -3,17 +3,13 @@ package io.gatling.amqp.request.builder
 import io.gatling.amqp.data._
 import io.gatling.core.session.Expression
 
+import scala.collection.mutable
+
 // TODO: use (implicit configuration: GatlingConfiguration)
-class AmqpRequestBuilder(
-  requestName: Expression[String],
-  var _request: Option[AmqpRequest] = None
+case class AmqpRequestBuilder(
+                               requestName: Expression[String],
+                               val _requests: mutable.Builder[AmqpRequest, List[AmqpRequest]] = List.newBuilder
 ) extends Publishing with Consuming {
 
-  def build: AmqpRequest = _request.getOrElse(throw new RuntimeException("No AmqpRequest Found"))
-}
-
-object AmqpRequestBuilder {
-  def apply(requestName: Expression[String]): AmqpRequestBuilder = {
-    new AmqpRequestBuilder(requestName)
-  }
+  def build: Iterable[AmqpRequest] = _requests.result()
 }

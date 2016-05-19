@@ -8,9 +8,7 @@ trait Publishing { this: AmqpRequestBuilder =>
     publish(PublishRequest(queueName, bodyStr = body))
 
   def publish(req: PublishRequest): AmqpRequestBuilder = {
-    _request.foreach(_ =>
-      throw new RuntimeException(s"sTry to define consume, but previously some action was defined (${_request}). Use separate exec for this action!"))
-    _request = Some(req)
+    _requests += req
     this
   }
 }

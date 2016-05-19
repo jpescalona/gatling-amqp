@@ -28,9 +28,7 @@ trait Consuming { this: AmqpRequestBuilder =>
     consume(ConsumeSingleMessageRequest(queueName, autoAck = autoAck, saveResultToSession = saveResultToSession))
 
   def consume(req: ConsumeRequest): AmqpRequestBuilder = {
-    _request.foreach(_ =>
-      throw new RuntimeException(s"sTry to define consume, but previously some action was defined (${_request}). Use separate exec for this action!"))
-    _request = Some(req)
+    _requests += req
     this
   }
 }
