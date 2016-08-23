@@ -8,7 +8,7 @@ import io.gatling.core.action.{Action, ChainableAction}
 import io.gatling.core.session.Session
 import io.gatling.core.util.NameGen
 
-class AmqpConsumeAction(req: ConsumeRequest, val next: Action)(implicit amqp: AmqpProtocol) extends ChainableAction with NameGen {
+case class AmqpConsumeAction(req: ConsumeRequest, val next: Action)(implicit amqp: AmqpProtocol) extends ChainableAction with NameGen {
   override def execute(session: Session): Unit = {
     // router creates actors (AmqpConsumer) per session after receiving AmqpConsumeRequest.
     amqp.router ! AmqpConsumeRequest(req, session, next)
