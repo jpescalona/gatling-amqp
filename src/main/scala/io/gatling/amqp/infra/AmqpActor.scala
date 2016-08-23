@@ -1,8 +1,7 @@
 package io.gatling.amqp.infra
 
 import akka.actor._
-import com.rabbitmq.client.Channel
-import com.rabbitmq.client.AlreadyClosedException
+import com.rabbitmq.client.{AlreadyClosedException, Channel}
 import io.gatling.amqp.config._
 import io.gatling.amqp.infra.AmqpActor.ConnectionClosed
 import io.gatling.core.akka.BaseActor
@@ -10,9 +9,16 @@ import pl.project13.scala.rainbow._
 
 import scala.util.{Failure, Success}
 
-abstract class AmqpActor(implicit amqp: AmqpProtocol) extends BaseActor with Logging {
+abstract class AmqpActor(implicit amqp: AmqpProtocol) extends BaseActor {
   protected lazy val conn = amqp.newConnection
   protected var _channel: Option[Channel] = None
+  protected lazy val className = getClass.getSimpleName
+  protected val log = logger // gap between LazyLogging and ActorLogging
+  protected def stopMessage: String = ""
+
+  override def receive: Receive = {
+    ???
+  }
 
   override def preRestart(reason: Throwable, message: Option[Any]): Unit = {
     logger.error(s"Actor $this crashed on message $message".red, reason)
