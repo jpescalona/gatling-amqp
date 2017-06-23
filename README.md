@@ -30,6 +30,9 @@ message is published. It can do publish with confirm mode turned on or
 off. It changes way of getting publish seq number and way of acknowledge
 from amqp server is done (sync or async).
 
+In message body, session values can be used for injecting dynamic data, 
+same behavior like gatling session API: http://gatling.io/docs/current/session/session_api/  
+
 ```
   implicit val amqpProtocol: AmqpProtocol = amqp
     .host("localhost")
@@ -38,10 +41,11 @@ from amqp server is done (sync or async).
     .auth("guest", "guest")
     .poolSize(10)    
 
-  val body = "{foo:1}")
+  val body = "{foo:1, bar: ${mykey}}")
   val queueName = "myQueue"
 
   val scn = scenario("AMQP Publish").repeat(1000) {
+    exec(session => session.set("mykey", "2"),  
     exec(amqp("Publish").publish(queueName, body = Right(body)))
   }
 
@@ -61,10 +65,11 @@ from amqp server is done (sync or async).
     .poolSize(10)
     .confirmMode()
 
-  val body = "{foo:1}")
+  val body = "{foo:1, bar: ${mykey}}")
   val queueName = "myQueue"
 
   val scn = scenario("AMQP Publish(ack)").repeat(1000) {
+    exec(session => session.set("mykey", "2"),
     exec(amqp("Publish").publish(queueName, body = body))
   }
 
